@@ -1,0 +1,13 @@
+name: paper-qa
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12.0
+  - pandas
+  - pip=24.2
+  - pyyaml
+  - pyzotero=1.6.11
+  - pip:
+    - paper-qa==5.19.0
+prefix: /Users/joshamilton/miniforge3/envs/paper-qa
