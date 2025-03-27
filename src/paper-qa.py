@@ -92,7 +92,7 @@ def extract_metadata(items, zot, papers_dir):
             for att in attachments:
                 if 'filename' in att['data']:
                     file_name = att['data']['filename']
-                    file_location = os.path.join(PAPERS_DIR, file_name)
+                    file_location = os.path.join(papers_dir, file_name)
                     current_files.add(file_name)
 
                     # Download file if it doesn't exist
@@ -104,7 +104,7 @@ def extract_metadata(items, zot, papers_dir):
     # Remove files that are no longer in Zotero
     files_to_remove = existing_files - current_files
     for file_name in files_to_remove:
-        file_path = os.path.join(PAPERS_DIR, file_name)
+        file_path = os.path.join(papers_dir, file_name)
         if os.path.exists(file_path):
             os.remove(file_path)
 
@@ -211,10 +211,10 @@ def main():
 
     if args.mode == "download":
         print("Retrieving Zotero items...")
-        items, zot = get_zotero_items(LIBRARY_ID, API_KEY)
+        items, zot = get_zotero_items(LIBRARY_ID, API_KEY, LIBRARY_TYPE)
 
         print("Extracting metadata...")
-        metadata = extract_metadata(items, zot, PAPERS_DIR=PAPERS_DIR)
+        metadata = extract_metadata(items, zot, PAPERS_DIR)
 
         print("Saving metadata to manifest...")
         save_metadata_csv(metadata, csv_path=MANIFEST_PATH)
