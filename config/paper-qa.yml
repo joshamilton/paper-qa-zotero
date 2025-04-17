@@ -1,8 +1,8 @@
 name: paper-qa
 channels:
   - conda-forge
-  - defaults
 dependencies:
+  - ollama=0.6.5
   - python=3.12.0
   - pandas
   - pip=24.2

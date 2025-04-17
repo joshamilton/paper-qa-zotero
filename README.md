@@ -1,5 +1,5 @@
 # Paper-QA-Zotero: A tool to query your Zotero library using PaperQA2
-Copyright (c) 2024, Joshua J. Hamilton  
+Copyright (c) 2025, Joshua J. Hamilton  
 Email: <joshamilton@gmail.com>  
 URL: <https://www.linkedin.com/in/joshamilton/>  
 URL: <https://github.com/joshamilton/>  
@@ -37,20 +37,25 @@ Create a `config/config.yml` file to specify the necessary parameters for the ap
 
 #### Example `config/config.yml`:
 ```yaml
+openai_api_key: "YOUR_API_KEY"
+
+paperqa_index_dir: "YOUR_INDEX_DIR"
+paperqa_papers_dir: "YOUR_PAPERS_DIR"
+paperqa_manifest_path: "YOUR_MANIFEST_PATH"
+
 zotero_library_id: "YOUR_LIBRARY_ID"
 zotero_api_key: "YOUR_API_KEY"
-library_type: "user"  # Use "group" for personal libraries
-index_dir: "pari_bio/index"
-papers_dir: "pari_bio/papers"
-manifest_path: "pari_bio/manifest.csv"
+zotero_library_type: "user"  # Use "group" for personal libraries
 ```
+- **openai_api_key**: Your OpenAI API key.
 
-- **library_id**: Your Zotero library ID. For group libraries, find it by hovering over the settings link on your Zotero group page.
-- **zotero_api_key**: Your Zotero API key with read access to the library.
-- **zotero_library_type**: Set to `"user"` for personal libraries or `"group"` for group libraries.
 - **paperqa_index_dir**: Directory where the index will be stored.
 - **paperqa_papers_dir**: Directory where downloaded papers will be stored.
 - **paperqa_manifest_path**: Path to the manifest file that tracks metadata for the papers.
+
+- **zotero_ibrary_id**: Your Zotero library ID. For group libraries, find it by hovering over the settings link on your Zotero group page.
+- **zotero_api_key**: Your Zotero API key with read access to the library.
+- **zotero_library_type**: Set to `"user"` for personal libraries or `"group"` for group libraries.
 
 ## Usage
 ### Download Zotero library

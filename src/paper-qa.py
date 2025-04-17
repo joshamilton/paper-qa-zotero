@@ -183,6 +183,12 @@ def main():
     # Load configuration
     config = load_config(args.config)
 
+    # Temporarily set the OPENAI_API_KEY from the config
+    openai_api_key = config.get("openai_api_key")
+    if openai_api_key:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+
+    # Load Zotero and PaperQA settings from the config
     LIBRARY_ID = config["zotero_library_id"]
     API_KEY = config["zotero_api_key"]
     LIBRARY_TYPE = config["zotero_library_type"]
