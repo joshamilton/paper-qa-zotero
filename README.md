@@ -13,23 +13,47 @@ The Zotero library is downloaded using PyZotero, and PaperQA2 is used to index a
 When downloading documents from your Zotero library, the tool will check for an existing manifest file and only download new documents.
 
 ## Setup
-### Clone the Repository
+### Clone the Repository and Install Dependencies
 ```bash
+# clone the repository
 git clone git@github.com:joshamilton/paper-qa-zotero.git
 cd paper-qa-zotero
-```
 
-### Setup Mamba
-```bash
+# install mamba
 curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
 bash Miniforge3-$(uname)-$(uname -m).sh
+
+# install dependencies
+mamba env create -f config/paper-qa.yml
+
+# activate the environment
+mamba activate paper-qa
 ```
 
-### Environment Setup
-Installs paper-qa and dependencies required by paper-qa-zotero.
+## Optional Setup: Local LLMs
+By default, the application uses OpenAI's API. However, any LiteLLM compatible model can be configured to use with PaperQA2. This utility currently supports the following models:
+
+LLMs:
+- **TBD**
+
+Embedding models:
+- `mxbai-embed-large`
+- `nomic-embed-text`
+
+Models are made available through [Ollama](https://ollama.com/), which should be installed using [Homebrew](https://brew.sh/). Ollama is a local LLM server that allows you to run LLMs on your local machine. **Note**: While Ollama can be installed via conda, it does not utilize the GPU.
+
 ```bash
-mamba env create -f config/paper-qa.yml
-mamba activate paper-qa
+# install homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# install ollama
+brew install ollama
+```
+
+To use local LLMs, download the models:
+```bash
+ollama serve
+ollama pull llama3.3
+ollama pull <embedding model>
 ```
 
 ### Configure the Application
@@ -56,6 +80,8 @@ zotero_library_type: "user"  # Use "group" for personal libraries
 - **zotero_ibrary_id**: Your Zotero library ID. For group libraries, find it by hovering over the settings link on your Zotero group page.
 - **zotero_api_key**: Your Zotero API key with read access to the library.
 - **zotero_library_type**: Set to `"user"` for personal libraries or `"group"` for group libraries.
+
+
 
 ## Usage
 ### Download Zotero library
@@ -98,6 +124,56 @@ The application will return an answer based on the indexed documents.
 ### Notes
 - Ensure that the `config/config.yml` file is properly configured before running any commands.
 - Sensitive information like `api_key` should not be committed to version control. Add `config/config.yml` to `.gitignore` to prevent accidental commits.
+
+---
+
+## Background: Benchmarking Ollama LLMs
+I benchmarked various LLMs available through Ollama to determine their performance on my local machine (Apple M4 Pro chip with 12‑core CPU, 16‑core GPU, 48GB unified memory). LLMs were selected based on their size: PaperQA2 recommends using models with 7B parameters or greater, but the models also must fit within memory (48 GB).
+
+1. **Run the Benchmarking Script**:
+   Use the `ollama-benchmark.py` script to evaluate the performance of different models.
+   ```bash
+   python src/ollama-benchmark.py
+   ```
+   This script will:
+   - Download and test a list of models defined in the script.
+   - Measure runtime and speed (tokens per second) on a single query.
+   - Save the results to `results/ollama_benchmark.csv`.
+
+**Note**: The models themselves take up 320 GB of storage space, and require about 5 hours to download. Running the benchmark script will take about 35 minutes.
+
+2. **Inspect Results**:
+   Review the benchmarking results in the CSV file to exclude models that are too slow for practical use.
+
+3. **Select Models**:
+   All of the 70b parameter models had acceptable performance, returning answers in one minute or less. Therefore, the following models were selected for benchmarkign with PaperQA2:
+    - deepseek-llm:67b
+    - llama2:70b
+    - llama3:70b
+    - llama3.1:70b
+    - llama3.3:70b
+
+## Background: Benchmarking Ollama LLMs within PaperQA2
+
+1. **Prepare the test dataset**:
+The test dataset is a collection of primary research articles on the topic of microbial genome assembly. Papers can be accessed upon request via the Zotero group [LjECTEXaBa](https://www.zotero.org/groups/5961949/ljectexaba).
+
+2. **Run the Benchmarking Script**:
+   Use the `paperqa-benchmark.py` script to evaluate the performance of different models.
+   ```bash
+   python src/paperqa-benchmark.py
+   ```
+   This script will:
+   - Download the Zotero library.
+   - Test each model using each of two embedding models:
+      - `mxbai-embed-large`
+      - `nomic-embed-text`
+      - Index the library
+      - Query the library using a set of questions
+      - Measure runtime and speed (tokens per second) on a single query.
+   - Save the results to `results/paperqa_benchmark.csv`.
+
+**Note**: Need to reindex dataset with each model. Dealing with timeout issues at the moment.
 
 ### License
 This project is licensed under the MIT License.
